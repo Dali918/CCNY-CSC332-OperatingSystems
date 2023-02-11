@@ -1,0 +1,17 @@
+- dynamic memory allocation uses the library functions: malloc(), calloc(), realloc(), and free()
+- defined in the <stdlib.h> header file
+
+
+### malloc
+- syntax of malloc() `ptr = (castType*) malloc(size);`
+- reserves block of memory for the specified size and returns a void pointer which can be cast into any type
+- literally the specfied size is what you get
+
+### calloc
+- same as malloc but leaves the memory addresses intialized to 0
+- syntax of calloc() `ptr = (castType*)calloc(n, size);`
+- calloc stands for "continguous memory allocation"
+
+### free
+- syntax of free : `free(ptr)`
+- frees the memory held by the 
