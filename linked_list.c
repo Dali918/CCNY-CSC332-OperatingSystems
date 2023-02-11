@@ -21,12 +21,12 @@ void search();
 void sort();
 // delete function
 void delete();
-//free memory 
+// free memory
 void free_list(struct node *curr_head);
-//data entry helper function
+// data entry helper function
 int data_entry();
 
-int main()
+int main(int argc, char *argv[])
 {
 
     sentinel = (struct node *)malloc(sizeof(struct node)); // sentinel helper node
