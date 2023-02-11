@@ -182,13 +182,18 @@ void insert_pos()
     int pos;
     scanf("%d", &pos);
 
-    if (pos < 1 || pos > length + 1)
-    {
-        printf("invalid position\n");
-    }
-    else if (pos == 1)
+    if (length == 0 || pos == 1)
     {
         insert_begin();
+    }
+    else if (pos < 1 || pos > length)
+    {
+        printf("invalid position\n");
+        return;
+    }
+    else if (pos == length)
+    {
+        insert_end();
     }
     else
     {
