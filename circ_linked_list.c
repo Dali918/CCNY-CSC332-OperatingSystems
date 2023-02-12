@@ -50,7 +50,7 @@ int main(int argc, char *arv[])
         scanf("%d", &choice);
         switch (choice)
         {
-        case 1:
+        case 1: 
             traverse();
             break;
         case 2:
