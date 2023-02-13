@@ -50,7 +50,7 @@ int main(int argc, char *arv[])
         scanf("%d", &choice);
         switch (choice)
         {
-        case 1: 
+        case 1:
             traverse();
             break;
         case 2:
@@ -84,7 +84,7 @@ int main(int argc, char *arv[])
     return 0;
 }
 
-// helper entry fuction
+// helper data entry fuction
 int data_entry()
 {
     int data;
@@ -216,6 +216,56 @@ void insert_pos()
 
 void search()
 {
+    // get query data
+    int query = data_entry();
+    // get the current head
+    struct node *curr = sentinel->next;
+    // end search if empty list
+    if (curr == NULL)
+    {
+        printf("\nEmpty List\n");
+    }
+    
+    do
+    {
+
+        // end search if query found
+        if (curr->data == query)
+        {
+            printf("%d found at address: ", curr->data);
+            printf("%p\n", curr);
+            return;
+        }
+
+        curr = curr->next;
+    } while (curr->next != sentinel->next);
+
+    // else if (curr->data == query)
+    // {
+    //     printf("%d found at address: ", curr->data);
+    //     printf("%p\n", curr);
+    //     return;
+    // }
+    // else
+    // {
+    //     //search while not at end of loop
+    //     while (curr->next != sentinel->next)
+    //     {
+    //         //end search if query found
+    //         if (curr->data == query)
+    //         {
+    //             printf("%d found at address: ", curr->data);
+    //             printf("%p\n", curr);
+    //             return;
+    //         }
+
+    //         curr = curr->next;
+    //     }
+    // }
+
+    //alert if value not found in list
+
+    printf("\nSearch Value not found\n");
 }
 // sort
 void sort()
