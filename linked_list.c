@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
     while (1)
     {
         // choose accordingly
+         printf("\n---------------------------------\n");
         printf("\n                MENU                             \n");
         printf("1.Traverse     \n");
         printf("2.Insert Beginning    \n");
@@ -46,6 +47,8 @@ int main(int argc, char *argv[])
         printf("5.Delete   \n");
         printf("6.Insert at Position \n");
         printf("7.sort the linked list \n");
+        printf("\npress any other key to exit \n");
+        printf("------------------------------------\n");
 
         scanf("%d", &choice);
         switch (choice)

@@ -46,6 +46,8 @@ int main(int argc, char *arv[])
         printf("5.Delete   \n");
         printf("6.Insert at Position \n");
         printf("7.sort the linked list \n");
+        printf("press any other key to exit \n");
+        printf("-----------------\n\n");
 
         scanf("%d", &choice);
         switch (choice)
