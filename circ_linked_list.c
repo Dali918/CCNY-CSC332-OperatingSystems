@@ -220,52 +220,43 @@ void search()
 {
     // get query data
     int query = data_entry();
+    int count = 1;
     // get the current head
     struct node *curr = sentinel->next;
     // end search if empty list
     if (curr == NULL)
     {
         printf("\nEmpty List\n");
+        return;
     }
-    
-    do
+
+    else if (curr->data == query)
     {
+        printf("%d found at position:\t", curr->data);
+        printf("%d\t", count);
+        printf("at address:\t%p\n", curr);
+        return;
+    }
 
-        // end search if query found
-        if (curr->data == query)
+    else
+    {
+        // search while not at end of loop
+        while (curr->next != sentinel->next)
         {
-            printf("%d found at address: ", curr->data);
-            printf("%p\n", curr);
-            return;
+            // end search if query found
+            if (curr->data == query)
+            {
+                printf("%d found at position:\t", curr->data);
+                printf("%d\t", count);
+                printf("at address:\t%p\n", curr);
+                return;
+            }
+
+            curr = curr->next;
         }
+    }
 
-        curr = curr->next;
-    } while (curr->next != sentinel->next);
-
-    // else if (curr->data == query)
-    // {
-    //     printf("%d found at address: ", curr->data);
-    //     printf("%p\n", curr);
-    //     return;
-    // }
-    // else
-    // {
-    //     //search while not at end of loop
-    //     while (curr->next != sentinel->next)
-    //     {
-    //         //end search if query found
-    //         if (curr->data == query)
-    //         {
-    //             printf("%d found at address: ", curr->data);
-    //             printf("%p\n", curr);
-    //             return;
-    //         }
-
-    //         curr = curr->next;
-    //     }
-    // }
-
-    //alert if value not found in list
+    // alert if value not found in list
 
     printf("\nSearch Value not found\n");
 }
