@@ -217,7 +217,6 @@ void search()
 {
     // get query data
     int query = data_entry();
-    int count = 1;
     // get the current head
     struct node *curr = sentinel->next;
     // end search if empty list
@@ -227,28 +226,21 @@ void search()
         return;
     }
 
-    else if (curr->data == query)
-    {
-        printf("%d found at position:\t", curr->data);
-        printf("%d\t", count);
-        printf("at address:\t%p\n", curr);
-        return;
-    }
-
     else
     {
+        int count = 1;
         // search while not at end of loop
-        while (curr->next != sentinel->next)
+        while (count<length+1)
         {
             // end search if query found
             if (curr->data == query)
             {
+                traverse();
                 printf("%d found at position:\t", curr->data);
-                printf("%d\t", count);
-                printf("at address:\t%p\n", curr);
+                printf("%d\n", count);
                 return;
             }
-
+            count++;
             curr = curr->next;
         }
     }
@@ -260,6 +252,7 @@ void search()
 // sort
 void sort()
 {
+    
 }
 // delete function
 void delete()
