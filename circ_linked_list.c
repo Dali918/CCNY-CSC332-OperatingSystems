@@ -42,11 +42,11 @@ int main(int argc, char *arv[])
         printf("1.Traverse     \n");
         printf("2.Insert Beginning    \n");
         printf("3.Insert End    \n");
-        printf("4.Search    \n");
-        printf("5.Delete   \n");
-        printf("6.Insert at Position \n");
-        printf("7.sort the linked list \n");
-        printf("press any other key to exit \n");
+        printf("4.Insert at Position\n");
+        printf("5.Search   \n");
+        printf("6.Sort\n");
+        printf("7.Delete \n");
+        printf("Other: Exit Program\n");
         printf("-----------------\n\n");
 
         scanf("%d", &choice);
@@ -62,16 +62,16 @@ int main(int argc, char *arv[])
             insert_end();
             break;
         case 4:
-            search();
-            break;
-        case 5:
-            delete ();
-            break;
-        case 6:
             insert_pos();
             break;
-        case 7:
+        case 5:
+            search();
+            break;
+        case 6:
             sort();
+        case 7:
+            delete ();
+            break;
             break;
         default:
             printf("Freeing up memory\n");
@@ -124,7 +124,7 @@ struct node *create_node()
     return temp;
 }
 
-struct node *insert_empty(struct node *node)
+void insert_empty(struct node *node)
 {
     if (tail == NULL)
     {
@@ -134,10 +134,7 @@ struct node *insert_empty(struct node *node)
         tail = node;
         // assign to self
         node->next = tail;
-        return tail;
-    }
-
-    return tail;
+        }
 }
 
 void insert_begin()
@@ -145,7 +142,7 @@ void insert_begin()
     struct node *temp = create_node();
     if (tail == NULL)
     {
-        tail = insert_empty(temp);
+        insert_empty(temp);
     }
     else
     {
@@ -164,7 +161,7 @@ void insert_end()
     struct node *temp = create_node();
     if (tail == NULL)
     {
-        tail = insert_empty(temp);
+        insert_empty(temp);
     }
     else
     {
