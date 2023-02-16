@@ -209,7 +209,7 @@ void insert_pos()
             curr = curr->next;
         }
 
-        temp->next = curr;
+        temp->next = curr;                                                                        
         prev->next = temp;
 
         length++;
