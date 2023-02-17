@@ -206,7 +206,7 @@ void insert_pos()
             curr = curr->next;
         }
 
-        temp->next = curr;                                                                        
+        temp->next = curr;
         prev->next = temp;
 
         length++;
@@ -286,6 +286,15 @@ void sort()
     printf("Enter 1 for ascending else any key for descending order\n");
     scanf("%d", &choice);
 
+    if (tail == NULL)
+    {
+        return;
+    }
+    else
+    {
+        tail->next = NULL;
+    }
+    
     struct node *sorted_head = NULL;
     struct node *curr_head = sentinel->next;
     struct node *next = NULL;
