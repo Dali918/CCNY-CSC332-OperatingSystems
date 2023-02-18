@@ -72,16 +72,13 @@ int main(int argc, char *arv[])
             search();
             break;
         case 6:
-            insertionSort(&(sentinel->next));
+            sort();
             break;
         case 7:
             delete ();
             break;
         default:
-            printf("Freeing up memory\n");
-            // free_list(sentinel->next);
             printf("Quitting\n");
-
             exit(0);
             break;
         }
@@ -253,85 +250,155 @@ void search()
     printf("\nSearch Value not found\n");
 }
 
-// sort
-// void sort()
-// {
-//     int choice;
-//     printf("Enter 1 for ascending else any key for descending order\n");
-//     scanf("%d", &choice);
-
-//     struct node *sorted_head = NULL;
-//     struct node *curr_head = sentinel->next;
-//     struct node *next = NULL;
-
-//     while (curr_head != NULL)
-//     {
-//         next = curr_head->next;
-//         if (choice == 1)
-//         {
-//             sorted_head = ascend_sort(sorted_head, curr_head);
-//         }
-//         else
-//         {
-//             sorted_head = descend_sort(sorted_head, curr_head);
-//         }
-
-//         curr_head = next;
-//     }
-
-//     sentinel->next = sorted_head;
-// }
-
-void insertionSort(struct node **head)
+struct node *ascend_sort(struct node *head, struct node *curr)
 {
-    // do not sort an empty list
-    if (*head == NULL)
+    // insert at front if head is null or item at head is greater (extend)
+    if (head == NULL || head->data > curr->data)
     {
+        curr->next = head;
+        return curr;
+    }
+    else
+    {
+        struct node *temp = head;
+        // find node that is just less than curr (worst case last node)
+        while (temp->next != NULL && temp->next->data < curr->data)
+        {
+            temp = temp->next;
+        }
+
+        curr->next = temp->next;
+        temp->next = curr;
+    }
+
+    return head;
+}
+
+struct node *descend_sort(struct node *head, struct node *curr)
+{
+    // insert at front if head is null or item at head is lesser (extend)
+    if (head == NULL || head->data < curr->data)
+    {
+        curr->next = head;
+        return curr;
+    }
+    else
+    {
+        struct node *temp = head;
+        // find node that is just greater than curr (worst case last node)
+        while (temp->next != NULL && temp->next->data > curr->data)
+        {
+            temp = temp->next;
+        }
+
+        curr->next = temp->next;
+        temp->next = curr;
+    }
+
+    return head;
+}
+
+void sort()
+{
+    if (head == NULL)
+    {
+        printf("Empty list\n");
         return;
     }
-    // derived from chatGPT, comments inserted by Dalitso
-    struct node *sorted = NULL;   // create a sorted head
-    struct node *current = *head; // start at the current head to insert in new linked list
-    do
+
+    int choice;
+    struct node *curr = head;
+    struct node *next = NULL;
+    struct node *sorted = NULL;
+    // flatten circular linked list
+    tail->next = NULL;
+
+    printf("Enter 1 for ascending else any key for descending order\n");
+    scanf("%d", &choice);
+    // sort list
+    while (curr != NULL)
     {
-        struct node *next = current->next;
-        if (sorted == NULL || sorted->data >= current->data)
+        // get next
+        next = curr->next;
+        // insert curr in new sorted linked list
+        if (choice == 1)
         {
-            current->next = sorted;
-            sorted = current;
+            sorted = ascend_sort(sorted, curr);
         }
         else
         {
-            struct node *temp = sorted;
-            // find node that is just less than current
-            while (temp->next != NULL && temp->next->data < current->data)
-            {
-                temp = temp->next;
-            }
-            // insert curent at found position
-            current->next = temp->next;
-            temp->next = current;
+            sorted = descend_sort(sorted, curr);
         }
-        current = next;
-    } while (current != *head);
-
-    // remake circular
-    current = sorted;
-    while (current->next != NULL)
-    {
-        current = current->next;
+        // insert next node
+        curr = next;
     }
-    // re-attach tail to head
-    current->next = sorted;
-
-    *head = sorted;
+    // find tail
+    curr = sorted;
+    while (curr->next != NULL)
+    {
+        curr = curr->next;
+    }
+    // adjust head and tail
+    curr->next = sorted;
+    tail = curr;
+    head = sorted;
+    sentinel->next = head;
 }
 
 // delete function
 void delete()
 {
+
+    if (head == NULL) // no traverse if linked list is empty
+    {
+        printf("Empty list, cannot delete\n");
+        return;
+    }
+
+    int item = data_entry();
+    // prev and curr pointers
+    struct node *prev = tail;
+    struct node *curr = tail->next;
+
+    do
+    {
+        if (curr->data == item)
+        {
+            printf("%d\t Deleting at address: ", curr->data);
+            printf("%p\n", (void *)&curr);
+
+            if (curr == head && head == tail)
+            {
+                head = NULL;
+                tail = NULL;
+            }
+
+            if (curr == head)
+            {
+                head = curr->next;
+            }
+            if (curr == tail)
+            {
+                tail = prev;
+            }
+            // delete  node and dellocate memory
+            prev->next = curr->next;
+            curr->next = NULL;
+            free(curr);
+            // decrement the length
+            length--;
+            // print new linked list
+            printf("%d\t Printing new linked list: ", curr->data);
+            traverse();
+            return;
+        }
+
+        prev = curr;
+        curr = curr->next;
+
+    } while (prev != tail);
+
+    // alert if not found
+    printf("%d\t not found in list", item);
 }
-// free memory
-void free_list(struct node *curr_head)
-{
-}
+
