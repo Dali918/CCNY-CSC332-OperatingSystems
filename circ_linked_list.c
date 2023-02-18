@@ -8,8 +8,8 @@ struct node
 };
 
 struct node *create_node();
-struct node *insert_begin();
-struct node *insert_end();
+void insert_begin();
+void insert_end();
 void insert_pos();
 // iteratiion function
 void traverse();
@@ -32,9 +32,11 @@ int length = 0;
 int main(int argc, char *arv[])
 {
     sentinel = (struct node *)malloc(sizeof(struct node)); // sentinel helper node
-    sentinel->next = NULL;
-    // tail pointer, head is implictly sentinel->next
+    // set the head and tail of the linked list to null
+    head = NULL;
     tail = NULL;
+    // set the sentinel node to head
+    sentinel->next = head;
 
     int choice;
     while (1)
@@ -58,10 +60,10 @@ int main(int argc, char *arv[])
             traverse();
             break;
         case 2:
-            sentinel->next = insert_begin();
+            insert_begin();
             break;
         case 3:
-            tail = insert_end();
+            insert_end();
             break;
         case 4:
             insert_pos();
@@ -99,7 +101,6 @@ int data_entry()
 // node creation helper function
 void traverse()
 {
-    struct node *head = sentinel->next;
     struct node *curr = head;
 
     if (head == NULL)
@@ -126,6 +127,7 @@ void traverse()
     //     }
     //     curr = curr->next;
     // }
+
     printf("\n------------------------\n");
 }
 struct node *create_node()
@@ -138,21 +140,21 @@ struct node *create_node()
 
 void insert_empty(struct node *node)
 {
-    if (tail == NULL)
-    {
-        // assign as head
-        sentinel->next = node;
-        // assign as tail
-        tail = node;
-        // assign to self
-        node->next = tail;
-    }
+
+    // point node's next to itself
+    node->next = node;
+    // make node head
+    head = node;
+    // make node tail
+    tail = node;
+    // adjust sentinel
+    sentinel->next = head;
 }
 
-struct node *insert_begin()
+void insert()
 {
     struct node *temp = create_node();
-    if (tail == NULL)
+    if (head == NULL)
     {
         insert_empty(temp);
     }
@@ -163,29 +165,26 @@ struct node *insert_begin()
         // point tail to node
         tail->next = temp;
         // make node new head
-        return temp;
     }
 
     length++;
 }
-struct node *insert_end()
-{
-    struct node *temp = create_node();
-    if (tail == NULL)
-    {
-        insert_empty(temp);
-    }
-    else
-    {
-        // point node to current head
-        temp->next = tail->next;
-        // point tail to node
-        tail->next = temp;
-        // make node new tail
-        return temp;
-    }
 
-    length++;
+void insert_begin()
+{
+    // insert node
+    insert();
+    // adjust head
+    head = tail->next;
+    // adjust sentinel
+    sentinel->next = head;
+}
+void insert_end()
+{
+    // insert node
+    insert();
+    // adjust tail
+    tail = tail->next;
 }
 void insert_pos()
 {
@@ -229,66 +228,29 @@ void search()
 {
     // get query data
     int query = data_entry();
-    // get the current head
-    struct node *curr = sentinel->next;
-    // end search if empty list
+    struct node *curr = head;
     if (curr == NULL)
     {
         printf("\nEmpty List\n");
         return;
     }
-
-    else
+    // search for node, stop when back at head
+    int count = 1;
+    do
     {
-        int count = 1;
-        // search while not at end of loop
-        while (count < length + 1)
+        if (curr->data == query)
         {
-            // end search if query found
-            if (curr->data == query)
-            {
-                traverse();
-                printf("%d found at position:\t", curr->data);
-                printf("%d\n", count);
-                return;
-            }
-            count++;
-            curr = curr->next;
+            traverse();
+            printf("%d found at position:\t", curr->data);
+            printf("%d\n", count);
+            return;
         }
-    }
+        count++;
+        curr = curr->next;
 
-    // alert if value not found in list
+    } while (curr != head);
 
     printf("\nSearch Value not found\n");
-}
-
-struct node *ascend_sort(struct node *head, struct node *node)
-{
-    // insert at front if head is null or item at head is greater (extend)
-    if (head == NULL || head->data > node->data)
-    {
-        node->next = head;
-        return node;
-    }
-    else
-    {
-        struct node *curr = head;
-        // find node that is just less than curr (worst case last node)
-        while (curr->next != NULL && curr->next->data < node->data)
-        {
-            curr = curr->next;
-        }
-        // insert in position
-        node->next = curr->next;
-        curr->next = node;
-        // adjust tail if this node is at the last
-        if (node->next == NULL)
-        {
-            tail = node;
-        }
-    }
-
-    return head;
 }
 
 // sort
@@ -323,7 +285,8 @@ struct node *ascend_sort(struct node *head, struct node *node)
 void insertionSort(struct node **head)
 {
     // do not sort an empty list
-    if (*head == NULL)    {
+    if (*head == NULL)
+    {
         return;
     }
     // derived from chatGPT, comments inserted by Dalitso
