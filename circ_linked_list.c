@@ -192,33 +192,28 @@ void insert_pos()
     if (length == 0 || pos == 1)
     {
         insert_begin();
+        return;
     }
-    else if (pos < 1 || pos > length)
+
+    if (pos < 1 || pos > length + 1)
     {
         printf("invalid position\n");
         return;
     }
-    else if (pos == length)
+
+    struct node *temp = create_node();
+    struct node *prev = tail;
+    struct node *curr = tail->next;
+
+    for (int i = 0; i < pos; i++)
     {
-        insert_end();
+        prev = curr;
+        curr = curr->next;
     }
-    else
-    {
-        struct node *temp = create_node();
-        struct node *prev = sentinel;
-        struct node *curr = sentinel->next;
 
-        for (int i = 1; i < pos; i++)
-        {
-            prev = curr;
-            curr = curr->next;
-        }
-
-        temp->next = curr;
-        prev->next = temp;
-
-        length++;
-    }
+    temp->next = curr;
+    curr = prev;
+    length++;
 }
 
 void search()
@@ -349,7 +344,7 @@ void sort()
 void delete()
 {
 
-    if (head == NULL) // no traverse if linked list is empty
+    if (head == NULL) // do not delete from empty linked list
     {
         printf("Empty list, cannot delete\n");
         return;
@@ -372,11 +367,12 @@ void delete()
                 head = NULL;
                 tail = NULL;
             }
-
+            // adjust head if deleting head
             if (curr == head)
             {
                 head = curr->next;
             }
+            // adjust tail if deleting tail
             if (curr == tail)
             {
                 tail = prev;
@@ -401,4 +397,3 @@ void delete()
     // alert if not found
     printf("%d\t not found in list", item);
 }
-
