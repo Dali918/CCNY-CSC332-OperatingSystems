@@ -198,25 +198,21 @@ void insert_pos()
         printf("invalid position\n");
         return;
     }
-    else if (pos == length)
-    {
-        insert_end();
-    }
     else
     {
         struct node *temp = create_node();
-        struct node *prev = sentinel;
-        struct node *curr = sentinel->next;
-
-        for (int i = 1; i < pos; i++)
+        struct node *prev = tail;
+        struct node *curr = tail->next;
+        //find position to insert
+        for (int i =1; i < pos; i++)
         {
             prev = curr;
             curr = curr->next;
         }
-
+        //insert node
         temp->next = curr;
         prev->next = temp;
-
+        //increment length
         length++;
     }
 }
@@ -313,7 +309,7 @@ void sort()
     // flatten circular linked list
     tail->next = NULL;
 
-    printf("Enter 1 for ascending else any key for descending order\n");
+    printf("Enter 1 for ascending order and any other integer for descending order\n");
     scanf("%d", &choice);
     // sort list
     while (curr != NULL)
@@ -401,4 +397,3 @@ void delete()
     // alert if not found
     printf("%d\t not found in list", item);
 }
-
