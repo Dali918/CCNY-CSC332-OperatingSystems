@@ -192,8 +192,10 @@ void insert_pos()
     if (length == 0 || pos == 1)
     {
         insert_begin();
+        return;
     }
-    else if (pos < 1 || pos > length)
+
+    if (pos < 1 || pos > length + 1)
     {
         printf("invalid position\n");
         return;
@@ -345,7 +347,7 @@ void sort()
 void delete()
 {
 
-    if (head == NULL) // no traverse if linked list is empty
+    if (head == NULL) // do not delete from empty linked list
     {
         printf("Empty list, cannot delete\n");
         return;
@@ -368,11 +370,12 @@ void delete()
                 head = NULL;
                 tail = NULL;
             }
-
+            // adjust head if deleting head
             if (curr == head)
             {
                 head = curr->next;
             }
+            // adjust tail if deleting tail
             if (curr == tail)
             {
                 tail = prev;
