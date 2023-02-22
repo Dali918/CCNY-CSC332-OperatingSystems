@@ -14,8 +14,8 @@ int main(int argc, char *argv[])
         return 1;
     }
     errno = 0;
-    fd = open(argv[1], O_CREAT | O_RDWR,
-              S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
+    char *filepath = argv[1];
+    fd = open(filepath, O_CREAT | O_RDWR);
     if (fd == -1)
     {
         printf("\n open () failed with error [%s]\n", strerror(errno));
@@ -28,6 +28,14 @@ int main(int argc, char *argv[])
         since we opened it in read-only mode. Also once done with processing,
         file needs to be close */
     }
+
+    int returnval = access(filepath, F_OK);
+    if (returnval == 0)
+        printf("\n %s exists\n", filepath);
+    else{
+        printf("\n %s does not exist and was not created\n", filepath);
+    }
+
     close(fd);
     return 0;
 }
