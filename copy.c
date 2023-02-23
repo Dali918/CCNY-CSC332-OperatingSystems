@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     // check if opened
     if (fd < 0)
     {
-        printf("\n Failed to open\n");
+        perror("open");
         return 1;
     }
     // create buffer
@@ -38,20 +38,29 @@ int main(int argc, char *argv[])
     read(fd, buff, size);
     // print buffer contents
     printf("\n%s\n", buff);
-    // close the source file
     close(fd);
-    // open destination filepath or create it
-    fd = open(dest_filepath, O_CREAT | O_RDONLY, 0644);
+    // open destination filepath and wipe contents or create it
+    int fd_next = open(dest_filepath, O_CREAT | O_WRONLY, 0644);
     // error check if open
-    if (fd < 0)
+    if (fd_next < 0)
     {
-        printf("\n Failed to open\n");
+        perror("open");
         return 1;
     }
     // write the contents from buffer to destination
-    write(fd, buff, size);
-    // close the file
-    close(fd);
+    ssize_t written = write(fd_next, buff, size);
+    if (written < 0)
+    {
+        perror("write");
+        close(fd_next);
+        return 1;
+    }
+    // close the file and error check
+    if (close(fd_next))
+    {
+        perror("close");
+        return 1;
+    }
 
     return 0;
 }
