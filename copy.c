@@ -32,14 +32,13 @@ int main(int argc, char *argv[])
         return 1;
     }
     // create buffer
-    const int size = 1024;
-    char buff[size];
+    char buff[1024] = {'\0'};
     // read from file to buffer
-    read(fd, buff, size);
+    read(fd, buff, sizeof(buff));
     // print buffer contents
     printf("\n%s\n", buff);
     close(fd);
-    // open destination filepath and wipe contents or create it
+    // open destination filepath and wipe contents or create it, -rw-r--r--
     int fd_next = open(dest_filepath, O_CREAT | O_WRONLY, 0644);
     // error check if open
     if (fd_next < 0)
@@ -48,7 +47,7 @@ int main(int argc, char *argv[])
         return 1;
     }
     // write the contents from buffer to destination
-    ssize_t written = write(fd_next, buff, size);
+    ssize_t written = write(fd_next, buff, sizeof(buff));
     if (written < 0)
     {
         perror("write");
@@ -60,6 +59,11 @@ int main(int argc, char *argv[])
     {
         perror("close");
         return 1;
+    }
+
+    if (0)
+    {
+        printf("\nnegative is also true\n");
     }
 
     return 0;
