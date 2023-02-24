@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     int exists, readaccess, fd;
     exists = access(filepath, F_OK);
     readaccess = access(filepath, R_OK);
-    // error check file existence and access
+    // error check fargument count, file existence, and access
     if (exists || readaccess || argc!=2)
     {
         if(argc!=2)
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
             printf("%s is not accessible\n", filepath);
         return 0;
     }
-    //open the file and errorcheck
+    //open the file and errorcheck open operation
     fd = open(filepath, O_RDWR);
     if (fd < 0)
     {
@@ -31,8 +31,9 @@ int main(int argc, char *argv[])
     }
     // number of bytes read
     ssize_t char_read;
+    //create buffer
     char buff[buff_size];
-    // read and error check
+    // read and error check reading operation
     char_read = read(fd, buff, buff_size);
     if (char_read < 0)
     {
