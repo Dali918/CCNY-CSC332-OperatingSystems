@@ -3,6 +3,8 @@
 #include <errno.h>
 #include <fcntl.h>
 
+const int buff_size = 100;
+
 int main(int argc, char *argv[])
 {
 
@@ -24,42 +26,50 @@ int main(int argc, char *argv[])
     }
 
     // open the source file in read only mode, -rw-rw-rw- permissions
-    int fd = open(source_filepath, O_RDONLY, 0644);
-    int fd_write = open(dest_filepath, O_CREAT | O_WRONLY, 0666);
+    int fd_source = open(source_filepath, O_RDONLY, 0644);
+    int fd_dest = open(dest_filepath, O_CREAT | O_WRONLY, 0666);
 
-    if (!fd || !fd_write)
+    if (!fd_source || !fd_dest)
     {
         perror("error");
         return 1;
     }
-
-    char ch;
-    ssize_t written;
-    ssize_t file_read;
-    int count = 0;
-    while (read(fd, &ch, 1) == 1)
+    // store number bytes read and written
+    ssize_t chars_written;
+    ssize_t chars_read;
+    //create buffer with 100 characters
+    char buff[buff_size];
+    //loop as long as number bytes read is greater than 0
+    while ((chars_read = read(fd_source, buff, buff_size)) > 0)
     {
-        count++;
-        // write the contents from buffer to destination
-        if (count == 100)
+        //go through the buffer and change chars
+        for (int i = 0; i < buff_size; i++)
         {
-            char word[3] = {'W', 'Y', 'Z'};
-            written = write(fd_write, &word, 3);
-            count = 0;
+            if (buff[i] == '1')
+            {
+                buff[i] == 'L';
+            }
         }
-        else
-        {
-            written = write(fd_write, &ch, 1);
-        }
-
-        // error check
-        if (written < 0)
+        // write buffer chars to file
+        chars_written = write(fd_dest, buff, buff_size);
+        //write XYZ chars to file
+        chars_written = write(fd_dest, "XYZ", 3);
+        // error check writing to file
+        if (chars_written  < 0)
         {
             perror("write");
-            close(fd_write);
             return 1;
         }
     }
+    //error check chars read if failed above
+    if (chars_read < 0)
+    {
+        perror("write");
+        return 1;
+    }
+    //close file descriptors
+    close(fd_source);
+    close(fd_dest);
 
     return 0;
 }
