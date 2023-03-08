@@ -23,6 +23,16 @@ int main(int argc, char *argv[])
     {
         // only child one fork if pid == 0
         printf("I am child one, my pid is: %d\n", getpid());
+        //path for date exec
+        char *path = "/bin/date";
+        if (execl(path, path, NULL) == -1)
+        {
+            printf("failed to execute in child process 1");
+        }
+        //wait status
+        wait(&status1);
+
+        return 0;
     }
     else
     {
