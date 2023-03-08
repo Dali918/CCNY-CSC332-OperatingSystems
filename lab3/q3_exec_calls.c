@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 
     int status1, status2;
 
-    printf("starting parent process: %d\n", getpid());
+    printf("starting parent process, pid: %d\n", getpid());
 
     if ((child_one = fork()) == -1)
     {
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     else if (child_one == 0)
     {
         // only child one fork if pid == 0
-        printf("\nI am child one, my pid is: %d\n", getpid());
+        printf("\nchild process 1, pid: %d\n", getpid());
         // path for date exec
         char *path = "/bin/date";
         if (execl(path, path, NULL) == -1)
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
         else if (child_two == 0)
         {
             // announce child two process
-            printf("\nI am child two, my pid is: %d\n", getpid());
+            printf("\nchild process 2 pid: %d\n", getpid());
             // child execvp
             char *command = "ls";
             // child two execvp call to list all files including hidden
