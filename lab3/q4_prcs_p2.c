@@ -1,73 +1,92 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include <errno.h>
+#include <fcntl.h>
 
 int main(int argc, char *argv[])
 {
-    pid_t child_one;
-    pid_t child_two;
+    // source and destination file-paths
+    char *source_filepath = argv[1];
+    char *dest1_filepath = argv[2];
+    char *dest2_filepath = argv[3];
 
-    int status1, status2;
-
-    printf("starting parent process, pid: %d\n", getpid());
-
-    if ((child_one = fork()) == -1)
+    if (argc != 4)
     {
-        // test child one fork
-        perror("error child one fork");
+        printf("not enough or too many arguments\n");
         return -1;
     }
-    else if (child_one == 0)
+
+    int fd_source, fd_dest1, fd_dest2, fd_current_dest;
+    // open the source file in read only mode
+    if ((fd_source = open(source_filepath, O_RDONLY, 0644)) < 0)
     {
-        // only child one fork if pid == 0
-        printf("\nchild process 1, pid: %d\n", getpid());
-        // path for date exec
-        char *path = "./q4_date";
-        if (execl(path, path, NULL) == -1)
+        perror("source error\n");
+        return -1;
+    }
+    // open dest 1 file in write only mode
+    if ((fd_dest1 = open(dest1_filepath, O_WRONLY, 0666)) < 0)
+    {
+        perror("dest1 error\n");
+        return -1;
+    }
+    // open dest 2 in write only mode
+    if ((fd_dest2 = open(dest2_filepath, O_WRONLY, 0666)) < 0)
+    {
+        perror("dest2 error\n");
+        return -1;
+    }
+
+    // storage for number bytes read and written
+    ssize_t chars_written = 0;
+    ssize_t chars_read = 0;
+    char c;        // char buffer
+    int count = 0; // counter for destination switching
+    // read 1 byte
+    while ((chars_read = read(fd_source, &c, 1)) == 1)
+    {
+        // for destination 1
+        if (count < 100)
         {
-            printf("failed to execute in child process 1\n");
+            fd_current_dest = fd_dest1;
+
+            if (c == '1')
+            {
+                c = 'L';
+            }
+        }
+        else
+        // for destination 2
+        {
+
+            fd_current_dest = fd_dest2;
+            if (c == '3')
+            {
+                c = 'E';
+            }
+        }
+        // write to destination
+        if ((chars_written = write(fd_current_dest, &c, 1)) != 1)
+        {
+            perror("writing error");
             return -1;
         }
-
-        return 0;
+        // reset counter
+        count++;
+        if (count == 150)
+        {
+            count = 0;
+        }
     }
-    else
+    // check source reading error
+    if (chars_read < 0)
     {
-        // wait for child to finish
-        waitpid(child_one, &status1, 0);
-        // // parent process
-        // if ((child_two = fork()) == -1)
-        // {
-        //     // check child process two
-        //     perror("error child two fork");
-        //     return -1;
-        // }
-        // else if (child_two == 0)
-        // {
-        //     // announce child two process
-        //     printf("\nchild process 2 pid: %d\n", getpid());
-        //     // child execvp
-        //     char *command = "ls";
-        //     // child two execvp call to list all files including hidden
-        //     char *args[] = {command, "-la", NULL};
-        //     if (execvp(command, args) == -1)
-        //     {
-        //         printf("failed to execute in child process 2\n");
-        //         return -1;
-        //     }
-
-        //     return 0;
-        // }
-        // else
-        // {
-        //     // wait for child two to finish
-        //     waitpid(child_two, &status2, 0);
-        //         }
+        perror("source reading error");
+        return -1;
     }
 
-    printf("\nterminating parent process, pid: %d\n", getpid());
+    close(fd_dest1);
+    close(fd_dest2);
+    close(fd_source);
 
     return 0;
 }

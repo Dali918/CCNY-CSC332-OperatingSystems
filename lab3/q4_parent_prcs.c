@@ -45,34 +45,34 @@ int main(int argc, char *argv[])
     {
         // wait for child to finish
         waitpid(child_one, &status1, 0);
-        // // parent process
-        // if ((child_two = fork()) == -1)
-        // {
-        //     // check child process two
-        //     perror("error child two fork");
-        //     return -1;
-        // }
-        // else if (child_two == 0)
-        // {
-        //     // announce child two process
-        //     printf("\nchild process 2 pid: %d\n", getpid());
-        //     // child execvp
-        //     char *command = "ls";
-        //     // child two execvp call to list all files including hidden
-        //     char *args[] = {command, "-la", NULL};
-        //     if (execvp(command, args) == -1)
-        //     {
-        //         printf("failed to execute in child process 2\n");
-        //         return -1;
-        //     }
+        // parent process
+        if ((child_two = fork()) == -1)
+        {
+            // check child process two
+            perror("error child two fork");
+            return -1;
+        }
+        else if (child_two == 0)
+        {
+                // announce child two process
+                printf("\nchild process 2 pid: %d\n", getpid());
+                // child execvp
+                char *command = "ls";
+                // child two execvp call to list all files including hidden
+                char *args[] = {command, "-la", NULL};
+                if (execvp(command, args) == -1)
+                {
+                    printf("failed to execute in child process 2\n");
+                    return -1;
+                }
 
-        //     return 0;
-        // }
-        // else
-        // {
-        //     // wait for child two to finish
-        //     waitpid(child_two, &status2, 0);
-        //         }
+                return 0;
+        }
+        else
+        {
+            // wait for child two to finish
+            waitpid(child_two, &status2, 0);
+        }
     }
 
     printf("\nterminating parent process, pid: %d\n", getpid());
