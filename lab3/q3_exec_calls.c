@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
         if ((child_two = fork()) == -1)
         {
             // check child process two
-            perror("error child two fork");
-            return -1;
+            perror("execvp fail: child process 1");
+            exit(EXIT_FAILURE);
         }
         else if (child_two == 0)
         {
@@ -54,8 +54,9 @@ int main(int argc, char *argv[])
             char *args[] = {command, "-la", NULL};
             if (execvp(command, args) == -1)
             {
-                printf("failed to execute in child process 2\n");
-                return -1;
+
+                perror("execvp fail: child process 2");
+                exit(EXIT_FAILURE);
             }
 
             return 0;
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
         {
             // wait for child two to finish
             waitpid(child_two, &status2, 0);
-                }
+        }
     }
 
     printf("\nterminating parent process, pid: %d\n", getpid());
