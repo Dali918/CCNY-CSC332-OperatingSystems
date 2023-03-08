@@ -22,20 +22,21 @@ int main(int argc, char *argv[])
     else if (child_one == 0)
     {
         // only child one fork if pid == 0
-        printf("I am child one, my pid is: %d\n", getpid());
-        //path for date exec
+        printf("\nI am child one, my pid is: %d\n", getpid());
+        // path for date exec
         char *path = "/bin/date";
         if (execl(path, path, NULL) == -1)
         {
-            printf("failed to execute in child process 1");
+            printf("failed to execute in child process 1\n");
+            return -1;
         }
-        //wait status
-        wait(&status1);
 
         return 0;
     }
     else
     {
+        // wait for child to finish
+        waitpid(child_one, &status1, 0);
         // parent process
         if ((child_two = fork()) == -1)
         {
@@ -45,15 +46,25 @@ int main(int argc, char *argv[])
         }
         else if (child_two == 0)
         {
-            // child process two success
-            printf("I am child two, my pid is: %d\n", getpid());
+            // announce child two process
+            printf("\nI am child two, my pid is: %d\n", getpid());
+            // child execvp
+            char *command = "ls";
+            // child two execvp call to list all files including hidden
+            char *args[] = {command, "-la", NULL};
+            if (execvp(command, args) == -1)
+            {
+                printf("failed to execute in child process 2\n");
+                return -1;
+            }
+
+            return 0;
         }
         else
         {
-            // terminate processes
-            waitpid(child_one, &status1, 0);
+            // wait for child two to finish
             waitpid(child_two, &status2, 0);
-            printf("terminating parent process, pid: %d\n", getpid());
+            printf("\nterminating parent process, pid: %d\n", getpid());
         }
     }
 
