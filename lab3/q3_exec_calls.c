@@ -64,9 +64,10 @@ int main(int argc, char *argv[])
         {
             // wait for child two to finish
             waitpid(child_two, &status2, 0);
-            printf("\nterminating parent process, pid: %d\n", getpid());
-        }
+                }
     }
+
+    printf("\nterminating parent process, pid: %d\n", getpid());
 
     return 0;
 }
