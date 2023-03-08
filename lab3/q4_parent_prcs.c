@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
             perror("execv");
             exit(EXIT_FAILURE);
         }
-        printf("\nterminating child process 1, pid: %d\n", getpid());
+        
         return 0;
     }
     else
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE);
             }
 
-            printf("\nterminating child process 2, pid: %d\n", getpid());
+            
             return 0;
         }
         else
