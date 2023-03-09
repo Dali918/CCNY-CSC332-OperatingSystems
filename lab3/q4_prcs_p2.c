@@ -83,7 +83,8 @@ int main(int argc, char *argv[])
         perror("source reading error");
         return -1;
     }
-
+    
+    //close file descriptors
     close(fd_dest1);
     close(fd_dest2);
     close(fd_source);
