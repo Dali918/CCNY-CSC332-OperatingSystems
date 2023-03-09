@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     fd2 = open("destination2.txt", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (fd1 == -1)
     {
-        perror("Error creating destination1.txt");
+        perror("Error creating destination2.txt");
         return -1;
     }
     // close file descriptors
