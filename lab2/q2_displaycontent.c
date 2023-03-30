@@ -12,9 +12,9 @@ int main(int argc, char *argv[])
     exists = access(filepath, F_OK);
     readaccess = access(filepath, R_OK);
     // error check fargument count, file existence, and access
-    if (exists || readaccess || argc!=2)
+    if (exists || readaccess || argc != 2)
     {
-        if(argc!=2)
+        if (argc != 2)
             printf("not enough or too many argments\n");
         else if (errno == ENOENT)
             printf("%s does not exist\n", filepath);
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
             printf("%s is not accessible\n", filepath);
         return 0;
     }
-    //open the file and errorcheck open operation
+    // open the file and errorcheck open operation
     fd = open(filepath, O_RDWR);
     if (fd < 0)
     {
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     }
     // number of bytes read
     ssize_t char_read;
-    //create buffer
+    // create buffer
     char buff[buff_size];
     // read and error check reading operation
     char_read = read(fd, buff, buff_size);
@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
         return 1;
     }
     // print to terminal
-    printf("%s",buff);
-    //close file descriptor
+    printf("%s", buff);
+    // close file descriptor
     close(fd);
     return 0;
 }
