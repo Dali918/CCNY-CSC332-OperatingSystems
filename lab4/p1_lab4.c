@@ -13,20 +13,19 @@ int main(int argc, char *argv[])
     pid_t child_one;
     char *source_filepath = argv[1];
 
-    ssize_t chars_read = 0;
-    ssize_t chars_written = 0;
+    ssize_t chars_read;
+    ssize_t chars_written;
 
     int pipefd[2];
     int child_status;
-    char c;
 
-    if (pipe(pipefd) == -1)
+    if (pipe(pipefd) == -1) // create the pipe
     {
         perror("pipe");
         exit(EXIT_FAILURE);
     }
 
-    if ((child_one = fork()) == -1)
+    if ((child_one = fork()) == -1) // fork child
     {
         // test child one fork
         perror("error child one fork");
@@ -38,6 +37,7 @@ int main(int argc, char *argv[])
         close(pipefd[0]); // close the read end of the pipe
 
         int fd_source; // file descriptor of the source file
+        char c;        // character buffer
         if ((fd_source = open(source_filepath, O_RDONLY, 0644)) < 0)
         {
             perror("source opening error\n");
@@ -60,17 +60,18 @@ int main(int argc, char *argv[])
     }
     else
     {
-        waitpid(child_one, &child_status, 1); // wait for the child process to finish 
-        close(pipefd[1]);  // close the unused write end 
+        waitpid(child_one, &child_status, 0); // wait for the child process to finish
+        close(pipefd[1]);                     // close the unused write end
 
-        int fd_dest = open(source_filepath, O_TRUNC|O_WRONLY); // open the source file again (truncate contents)
-        if (fd_dest == -1) //check if properly opened
+        int fd_dest = open(source_filepath, O_TRUNC | O_WRONLY); // open the source file again (truncate contents)
+        char c;
+        if (fd_dest == -1) // check if properly opened
         {
             perror("Error creating destination1.txt");
             return -1;
         }
 
-        char *header = "Parent is writing\n"; //write header to source
+        char *header = "Parent is writing\n"; // write header to source
 
         if ((chars_written = write(fd_dest, header, strlen(header))) != strlen(header)) // check header writing error
         {
@@ -88,10 +89,8 @@ int main(int argc, char *argv[])
             }
         }
 
-        
-
-        close(fd_dest); //close the destination file descriptor
-        close(pipefd[0]); //close the read end of the pipe
+        close(fd_dest);   // close the destination file descriptor
+        close(pipefd[0]); // close the read end of the pipe
     }
 
     return 0;
