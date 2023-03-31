@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
@@ -11,13 +12,12 @@ int main(int argc, char *argv[])
 {
     pid_t child_one;
     char *source_filepath = argv[1];
-    char *dest1_filepath = argv[2];
-    int child_status;
 
     ssize_t chars_read = 0;
     ssize_t chars_written = 0;
 
     int pipefd[2];
+    int child_status;
     char c;
 
     if (pipe(pipefd) == -1)
@@ -60,20 +60,19 @@ int main(int argc, char *argv[])
     }
     else
     {
-        close(pipefd[1]); // close the unused write end
-        waitpid(child_one, &child_status, 1);
+        waitpid(child_one, &child_status, 1); // wait for the child process to finish 
+        close(pipefd[1]);  // close the unused write end 
 
-        chars_written = 0;
-        int fd_dest = open("destination1.txt", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-        if (fd_dest == -1)
+        int fd_dest = open(source_filepath, O_TRUNC|O_WRONLY); // open the source file again (truncate contents)
+        if (fd_dest == -1) //check if properly opened
         {
             perror("Error creating destination1.txt");
             return -1;
         }
 
-        char *header = "Parent is writing\n";
+        char *header = "Parent is writing\n"; //write header to source
 
-        if ((chars_written = write(fd_dest, header, strlen(header))) != strlen(header))
+        if ((chars_written = write(fd_dest, header, strlen(header))) != strlen(header)) // check header writing error
         {
             perror("Error writing header");
             return -1;
@@ -89,7 +88,10 @@ int main(int argc, char *argv[])
             }
         }
 
-        close(fd_dest);
+        
+
+        close(fd_dest); //close the destination file descriptor
+        close(pipefd[0]); //close the read end of the pipe
     }
 
     return 0;
