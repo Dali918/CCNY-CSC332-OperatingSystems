@@ -10,6 +10,12 @@
 
 int main(int argc, char *argv[])
 {
+    // Do not run if not enough arguments are provided
+    if (argc!= 2){
+        perror("Not enough arguments");
+        exit(EXIT_FAILURE);
+    }
+
     pid_t child_one;
     char *source_filepath = argv[1];
 
@@ -38,7 +44,7 @@ int main(int argc, char *argv[])
 
         int fd_source; // file descriptor of the source file
         char c;        // character buffer
-        if ((fd_source = open(source_filepath, O_RDONLY, 0644)) < 0)
+        if ((fd_source = open(source_filepath, O_RDONLY, 0644)) < 0) //open the file and test it 
         {
             perror("source opening error\n");
             return -1;
@@ -54,6 +60,10 @@ int main(int argc, char *argv[])
             }
         }
 
+        if (read < 0 ){
+            perror("Error reading file "); // error reading the file not caused by end of file 
+            return -1;  // return -1 to the user
+        }
         close(pipefd[1]); // close the write end of the pipe when done
         close(fd_source); // close the source file descriptor
         return 0;

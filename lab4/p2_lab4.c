@@ -27,8 +27,10 @@ int main()
     }
     else if (child_one == 0)    // child signal handling
     {
+        signal_t sig1 = signal(SIGUSR1, handler); // the first signal 
+        signal_t sig2 = signal(SIGUSR1, handler); // track the second signal 
         // handle signal 1 and error check 
-        if ((signal(SIGUSR1, handler)) == SIG_ERR)
+        if (sig1 == SIG_ERR)
         {
             perror("Error processign signal 1\n");
             _exit(1);
