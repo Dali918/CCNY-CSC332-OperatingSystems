@@ -1,73 +1,51 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
-#include <stdlib.h>
+#include <sys/types.h>
 #include <sys/wait.h>
+typedef void (*sighandler_t)(int);
 
-// fork with child
-// send signal to child with kill in parent
-// receive signal
-// raise sends a signal to a running process
-
-void handler(int signum)
+void signal_handler(int signal)
 {
-    printf("child has received signal %d\n", signum); //signal handler
-    _exit(0);
+    printf("Child process received signal %d\n", signal);
 }
 
 int main()
 {
-    pid_t child_one; //child pid
-    int status; //child status 
 
-    if ((child_one = fork()) < 0) //error check forking
+    pid_t pid = fork();
+
+    if (pid == -1)
     {
-        perror("Error Forking\n");
-        exit(1);
+        perror("fork failed");
+        exit(EXIT_FAILURE);
     }
-    else if (child_one == 0)    // child signal handling
+    else if (pid == 0)
     {
-        signal_t sig1 = signal(SIGUSR1, handler); // the first signal 
-        signal_t sig2 = signal(SIGUSR1, handler); // track the second signal 
-        // handle signal 1 and error check 
+        sighandler_t sig1, sig2;
+        // set up signal 1
+        sig1 = signal(SIGUSR1, signal_handler); // assign
         if (sig1 == SIG_ERR)
         {
-            perror("Error processign signal 1\n");
-            _exit(1);
+            perror("Failure setting up signal 1");
+            exit(EXIT_FAILURE);
         }
-        // handle signal 2 and error check 
-        if ((signal(SIGUSR2, handler)) == SIG_ERR)
+        //set up signal 2
+        sig2 = signal(SIGUSR2, signal_handler); // SIGNAL FOR CHILD
+        if (sig2 == SIG_ERR)
         {
-            perror("Error processing signal 2\n");
-            _exit(1);
+            perror("Failure setting up signal 2");
+            exit(EXIT_FAILURE);
         }
-
-        exit(0);
+        pause(); // wait 
     }
     else
     {
-        sleep(1); //wait for child process to set up 
-
-        // send and error check first signal 
-        if ((kill(child_one, SIGUSR1)) == -1)
-        {
-            perror("Error sending user defined signal 1\n");
-            return -1;
-        }
-        
-        // send and error check second signal 
-        if ((kill(child_one, SIGUSR2)) == -1)
-        {
-            perror("Error sending user defined signal 2\n");
-            return -1;
-        }
-
-        // wait for the child process to terminate
-        if (waitpid(child_one, &status, 0) < 1)
-        {
-            perror("Error with child status");
-            exit(1);
-        }
+        sleep(1); // wait for child process to set up signals
+        kill(pid, SIGUSR1);                      // send the signals 
+        kill(pid, SIGUSR2);                      // kilss the signal
     }
+
     return 0;
 }
