@@ -1,103 +1,103 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <ctype.h>
 #include <sys/wait.h>
-#include <fcntl.h>
+#include <stdlib.h>
 #include <string.h>
 
 
-const int students = 10;
-const int chapters = 2;
-const int hwks = 2;
-const char *file = "quiz_grades.txt"; // file name
+#define NUM_STUDENTS 10
+#define NUM_CHAPTERS 2
+#define NUM_HOMEWORKS 2
+#define FILENAME "quiz_grades.txt"
 
+// Function to read grades from the file
+void readGrades(int grades[NUM_STUDENTS][NUM_CHAPTERS * NUM_HOMEWORKS])
+{
+    FILE *file = fopen(FILENAME, "r");
+    if (file == NULL)
+    {
+        printf("File could not be opened.\n");
+        exit(EXIT_FAILURE);
+    }
 
-void director(int grades[students][chapters * hwks]) {
+    for (int i = 0; i < NUM_STUDENTS; i++)
+    {
+        for (int j = 0; j < (NUM_CHAPTERS * NUM_HOMEWORKS); j++)
+        {
+            char value[10] = "";
+            char c;
+            while (fscanf(file, "%c", &c) != EOF)
+            {
+                if (isdigit(c))
+                {
+                    strncat(value, &c, 1);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            grades[i][j] = atoi(value);
+        }
+    }
 
-
-   //file reading
-   FILE *fp;
-   // reading value
-   int   values = 0;
-   // Open file
-   fp = fopen(file, "r");
-   if (fp == NULL) {
-       printf("File can not be opened.");
-       exit(0);
-   }
-   // File will open
-   else {
-
-
-       // reading each value in the file
-       for (int i = 0; i < students; i++){
-           for (int j = 0; j < (chapters * hwks); j++) {
-               char value[10] = "";
-               char str;
-               while(fscanf(fp, "%c", &str) != EOF){
-                   if (isdigit(str)){
-                       strncat(value, &str, 1);
-                   }
-                  else{
-                      break;
-                   }
-               }
-               grades[i][j] = atoi(value);
-           }
-       }
-   }
-   fclose(fp);
+    fclose(file);
 }
 
+// Function to calculate average grade and maximum grade for a specific chapter and homework
+void calculateWorker(int grades[NUM_STUDENTS][NUM_CHAPTERS * NUM_HOMEWORKS], int chapter, int homework)
+{
+    float sum = 0.0;
+    int max = 0;
+    int total = chapter * NUM_HOMEWORKS;
 
-void worker(int grades[students][chapters * hwks], int c, int h) {
+    for (int i = 0; i < NUM_STUDENTS; i++)
+    {
+        int grade = grades[i][total + homework];
+        sum += grade;
 
+        if (grade > max)
+        {
+            max = grade;
+        }
+    }
 
-   // the total
-   float sum = 0.0;
-   // max value
-   int max = 0;
-   // checks for the max
-   int total = c * hwks;
-   for (int i = 0; i < 10; i++) {
-       sum += grades[i][total + h];
-       if (max < grades[i][(total )+ h]) {
-           max = grades[i][(total )+ h];
-       }
-   }
- 
-   // average
-   printf("Average grades for Homework %d in Chapter %d: %0.2f\n", h + 1, c + 1, sum / 10);
-   exit(0);
+    printf("Average grade for Homework %d in Chapter %d: %.2f\n", homework + 1, chapter + 1, sum / NUM_STUDENTS);
+    exit(EXIT_SUCCESS);
 }
 
-
-// manager class
-void manager(int grades[students][chapters * hwks], int c) {
-   for (int homework = 0; homework < hwks; homework++) {
-       if (fork() == 0) {
-           worker(grades, c, homework);
-       }
-       wait(NULL); // ends the process
-   }
-   exit(0); // exit the process
+// Function to coordinate calculation for each chapter and homework
+void calculateManager(int grades[NUM_STUDENTS][NUM_CHAPTERS * NUM_HOMEWORKS], int chapter)
+{
+    for (int homework = 0; homework < NUM_HOMEWORKS; homework++)
+    {
+        if (fork() == 0)
+        {
+            calculateWorker(grades, chapter, homework);
+        }
+        wait(NULL);
+    }
+    exit(EXIT_SUCCESS);
 }
 
+int main()
+{
+    int grades[NUM_STUDENTS][NUM_CHAPTERS * NUM_HOMEWORKS];
 
-// main class
-int main(int argc, char *argv[]) {
-   int grades[students][chapters * hwks];
+    // Read grades from the file
+    readGrades(grades);
 
+    for (int chapter = 0; chapter < NUM_CHAPTERS; chapter++)
+    {
+        if (fork() == 0)
+        {
+            // Coordinate calculation for each chapter
+            calculateManager(grades, chapter);
+        }
+        wait(NULL);
+    }
 
-   director(grades);
-   for (int i = 0; i < chapters; i++) {
-       if (fork() == 0) {
-           // manager class from 0
-           manager(grades, i);
-       }
-       wait(NULL);
-   }
-   exit(0);
+    exit(EXIT_SUCCESS);
 }
